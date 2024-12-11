@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <random>
 
 namespace vm {
 	class Perseus {
@@ -12,11 +13,19 @@ namespace vm {
 
 		private:
 			std::iostream& ios_;
-			std::map<long, char[page_size]> clean_pages_;
-			std::map<long, char[page_size]> dirty_pages_;
+			using Pages = std::map<long, char[page_size]>;
+			Pages clean_pages_;
+			Pages dirty_pages_;
 
+			std::random_device rnd_;
+			std::mt19937 gen_ { rnd_() };
+
+			Pages::iterator random_it(Pages& pages);
+			void drop_some();
 			void make_room();
-			char* get_page(long page_idx);
+			void write_page(long idx, char* page);
+			char* get_page(long idx);
+			char* get_dirty_page(long idx);
 
 		public:
 			static constexpr int page_count { 1024 };
@@ -35,8 +44,9 @@ namespace vm {
 			void flush();
 
 			char get(long address);
-			void set(long address, char value);
+			char set(long address, char value);
 
 			bool dirty() const;
+			size_t pages() const;
 	};
 };
