@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <iostream>
 #include <map>
 #include <random>
@@ -13,19 +14,20 @@ namespace vm {
 
 		private:
 			std::iostream& ios_;
-			using Pages = std::map<long, char[page_size]>;
+			using Page = std::array<char, page_size>;
+			using Pages = std::map<long, Page>;
 			Pages clean_pages_;
 			Pages dirty_pages_;
 
 			std::random_device rnd_;
 			std::mt19937 gen_ { rnd_() };
 
-			Pages::iterator random_it(Pages& pages);
-			void drop_some();
-			void make_room();
-			void write_page(long idx, char* page);
-			char* get_page(long idx);
-			char* get_dirty_page(long idx);
+			Pages::iterator random_it_(Pages& pages);
+			void drop_some_();
+			void make_room_();
+			void write_page_(long idx, const Page& page);
+			Page& get_page_(long idx);
+			Page& get_dirty_page_(long idx);
 
 		public:
 			static constexpr int page_count { 1024 };
