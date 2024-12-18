@@ -29,6 +29,51 @@ namespace vm {
 		}
 	}
 
+	Page* Tree::extract_subtree(Page* node) {
+		Page* candidate;
+		if (! node->bigger) {
+			candidate = node->not_bigger;
+			node->not_bigger = nullptr;
+		} else if (! node->not_bigger) {
+			candidate = node->bigger;
+			node->bigger = nullptr;
+		} else {
+			candidate = node->not_bigger;
+			Page* max { candidate };
+			while (max->bigger) { max = max->bigger; }
+			max->bigger = node->bigger;
+			node->not_bigger = node->bigger = nullptr;
+		}
+		return candidate;
+	}
+
+	Page* Tree::erase(Page* node) {
+		if (! node) { return nullptr; }
+
+		Page* current { root }, *parent { nullptr };
+		while (current && current != node) {
+			parent = current;
+			if (current->index < node->index) {
+				current = current->bigger;
+			} else {
+				current = current->not_bigger;
+			}
+		}
+		if (! current) { return nullptr; } // not in tree
+
+		current = extract_subtree(node);
+
+		if (! parent) {
+			root = current;
+		} else if (parent->bigger == node) {
+			parent->bigger = current;
+		} else {
+			parent->not_bigger = current;
+		}
+		--count;
+		return node;
+	}
+
 	void Perseus::write_page_(size_t idx, const Page& page) {
 		ios_.seekp(idx << page_bits);
 		ios_.clear();

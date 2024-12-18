@@ -67,6 +67,24 @@ void tree_find() {
 	assert_(tree.find(3001) == nullptr);
 }
 
+void erase_from_empty_tree() {
+	vm::Tree tree;
+	vm::Page a;
+	assert_(tree.erase(&a) == nullptr);
+}
+
+void erase_root_from_tree() {
+	vm::Tree tree;
+	vm::Page small, middle, big;
+	small.index = 1000;
+	middle.index = 2000;
+	big.index = 3000;
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.root == &middle);
+	assert_(tree.erase(&middle) == &middle);
+	assert_(tree.count == 2);
+}
+
 void new_is_empty() {
 	std::stringstream ios;
 	vm::Page pages[4];
@@ -106,6 +124,8 @@ int main() {
 	triple_tree_insert();
 	same_tree_insert();
 	tree_find();
+	erase_from_empty_tree();
+	erase_root_from_tree();
 	new_is_empty();
 	simple_read();
 	simple_write();

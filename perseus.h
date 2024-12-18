@@ -24,6 +24,10 @@ namespace vm {
 
 		Page* insert(Page* node);
 		Page* find(size_t index) const;
+		Page* erase(Page* node);
+
+	private:
+		Page* extract_subtree(Page* node);
 	};
 
 	class Perseus {
