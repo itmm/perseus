@@ -23,6 +23,7 @@ namespace vm {
 		size_t count { 0 };
 
 		Page* insert(Page* node);
+		Page* find(size_t index) const;
 	};
 
 	class Perseus {

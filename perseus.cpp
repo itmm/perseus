@@ -17,6 +17,18 @@ namespace vm {
 		++count; return node;
 	}
 
+	Page* Tree::find(size_t index) const {
+		Page* current { root };
+		for (;;) {
+			if (! current || current->index == index) { return current; }
+			if (current->index < index) {
+				current = current->bigger;
+			} else {
+				current = current->not_bigger;
+			}
+		}
+	}
+
 	void Perseus::write_page_(size_t idx, const Page& page) {
 		ios_.seekp(idx << page_bits);
 		ios_.clear();

@@ -51,6 +51,22 @@ void same_tree_insert() {
 	assert_(b.not_bigger == &c);
 }
 
+void tree_find() {
+	vm::Tree tree;
+	assert_(tree.find(1000) == nullptr);
+	vm::Page small, middle, big;
+	small.index = 1000;
+	middle.index = 2000;
+	big.index = 3000;
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.find(2000) == &middle);
+	assert_(tree.find(1000) == &small);
+	assert_(tree.find(3000) == &big);
+	assert_(tree.find(999) == nullptr);
+	assert_(tree.find(1500) == nullptr);
+	assert_(tree.find(3001) == nullptr);
+}
+
 void new_is_empty() {
 	std::stringstream ios;
 	vm::Page pages[4];
@@ -89,6 +105,7 @@ int main() {
 	simple_tree_insert();
 	triple_tree_insert();
 	same_tree_insert();
+	tree_find();
 	new_is_empty();
 	simple_read();
 	simple_write();
