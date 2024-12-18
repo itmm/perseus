@@ -26,6 +26,7 @@ namespace vm {
 		Page* find(size_t index) const;
 		Page* get(size_t position) const;
 		Page* erase(Page* node);
+		Page* erase() { return erase(root); }
 
 	private:
 		std::variant<Page*, size_t> get_or_count(size_t position, Page* start) const;

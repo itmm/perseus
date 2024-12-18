@@ -85,6 +85,20 @@ void erase_root_from_tree() {
 	assert_(tree.count == 2);
 }
 
+void erase_any() {
+	vm::Tree tree;
+	assert_(tree.erase() == nullptr);
+	vm::Page small, middle, big;
+	small.index = 1000;
+	middle.index = 2000;
+	big.index = 3000;
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.erase() == &middle);
+	assert_(tree.erase() == &small);
+	assert_(tree.erase() == &big);
+	assert_(tree.erase() == nullptr);
+}
+
 void tree_count() {
 	vm::Tree tree;
 	assert_(tree.get(0) == nullptr);
@@ -145,6 +159,7 @@ int main() {
 	tree_find();
 	erase_from_empty_tree();
 	erase_root_from_tree();
+	erase_any();
 	tree_count();
 	new_is_empty();
 	simple_read();
