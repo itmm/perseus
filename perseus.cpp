@@ -29,6 +29,29 @@ namespace vm {
 		}
 	}
 
+	std::variant<Page*, size_t> Tree::get_or_count(
+		size_t position, Page* start
+	) const {
+		if (! start) { return 0ul; }
+		auto got { get_or_count(position, start->not_bigger) };
+		if (std::holds_alternative<Page*>(got)) { return got; }
+		size_t not_bigger_count { std::get<size_t>(got) };
+		position -= not_bigger_count;
+		if (! position) { return start; }
+		got = get_or_count(position - 1, start->bigger);
+		if (std::holds_alternative<Page*>(got)) { return got; }
+		return not_bigger_count + 1 + std::get<size_t>(got);
+	}
+
+	Page* Tree::get(size_t position) const {
+		auto got { get_or_count(position, root) };
+		if (std::holds_alternative<Page*>(got)) {
+			return std::get<Page*>(got);
+		} else {
+			return nullptr;
+		}
+	}
+
 	Page* Tree::extract_subtree(Page* node) {
 		Page* candidate;
 		if (! node->bigger) {
@@ -80,9 +103,9 @@ namespace vm {
 		ios_.write(page.data, page_size);
 	}
 
-	Page& random_page(Tree& tree) {
+	Page& Perseus::random_page_(Tree& tree) {
 		std::uniform_int_distribution<size_t> dist { 0, tree.count - 1 };
-		return *tree.root; // TODO: pick random element
+		return *tree.get(dist(gen_));
 	}
 
 	Perseus::Pages::iterator Perseus::random_it_(Pages& pages) {

@@ -24,9 +24,11 @@ namespace vm {
 
 		Page* insert(Page* node);
 		Page* find(size_t index) const;
+		Page* get(size_t position) const;
 		Page* erase(Page* node);
 
 	private:
+		std::variant<Page*, size_t> get_or_count(size_t position, Page* start) const;
 		Page* extract_subtree(Page* node);
 	};
 
@@ -48,6 +50,8 @@ namespace vm {
 			std::mt19937 gen_ { rnd_() };
 
 			Pages::iterator random_it_(Pages& pages);
+			Page& random_page_(Tree& tree);
+
 			void drop_some_();
 			void make_room_();
 			void write_page_(size_t idx, const Page& page);
