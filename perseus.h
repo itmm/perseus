@@ -12,9 +12,9 @@ namespace vm {
 
 	struct Page {
 		char data[page_size];
-		char color;
-		Page* left { nullptr };
-		Page* right { nullptr };
+		// char color;
+		Page* left;
+		Page* right;
 		size_t index;
 	};
 
