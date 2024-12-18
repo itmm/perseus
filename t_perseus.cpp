@@ -19,8 +19,8 @@ void simple_tree_insert() {
 	assert_(tree.insert(&node) == &node);
 	assert_(tree.root == &node);
 	assert_(tree.count == 1);
-	assert_(! node.left);
-	assert_(! node.right);
+	assert_(! node.not_bigger);
+	assert_(! node.bigger);
 }
 
 void triple_tree_insert() {
@@ -34,8 +34,8 @@ void triple_tree_insert() {
 	assert_(tree.insert(&big) == &big);
 	assert_(tree.count == 3);
 	assert_(tree.root == &middle);
-	assert_(middle.left == &small);
-	assert_(middle.right == &big);
+	assert_(middle.not_bigger == &small);
+	assert_(middle.bigger == &big);
 }
 
 void same_tree_insert() {
@@ -47,8 +47,8 @@ void same_tree_insert() {
 	assert_(tree.insert(&c) == &c);
 	assert_(tree.count == 3);
 	assert_(tree.root == &a);
-	assert_(a.left == &b);
-	assert_(b.left == &c);
+	assert_(a.not_bigger == &b);
+	assert_(b.not_bigger == &c);
 }
 
 void new_is_empty() {

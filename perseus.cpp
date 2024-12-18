@@ -2,16 +2,16 @@
 
 namespace vm {
 	Page* Tree::insert(Page* node) {
-		node->left = node->right = nullptr;
+		node->not_bigger = node->bigger = nullptr;
 		if (! root) { root = node; count = 1; return node; }
 		Page* parent { root };
 		for (;;) {
 			if (node->index <= parent->index) {
-				if (parent->left) { parent = parent->left; continue; }
-				parent->left = node; break;
+				if (parent->not_bigger) { parent = parent->not_bigger; continue; }
+				parent->not_bigger = node; break;
 			} else {
-				if (parent->right) { parent = parent->right; continue; }
-				parent->right = node; break;
+				if (parent->bigger) { parent = parent->bigger; continue; }
+				parent->bigger = node; break;
 			}
 		}
 		++count; return node;

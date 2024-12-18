@@ -13,8 +13,8 @@ namespace vm {
 	struct Page {
 		char data[page_size];
 		// char color;
-		Page* left;
-		Page* right;
+		Page* not_bigger;
+		Page* bigger;
 		size_t index;
 	};
 
