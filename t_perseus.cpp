@@ -51,6 +51,17 @@ void same_tree_insert() {
 	assert_(b.not_bigger == &c);
 }
 
+void root_insert() {
+	vm::Tree tree;
+	vm::Page a, b, c;
+	assert_(tree.insert_at_root(&a) == &a);
+	assert_(tree.root = &a);
+	assert_(tree.insert_at_root(&b) == &b);
+	assert_(tree.root = &b);
+	assert_(tree.insert_at_root(&c) == &c);
+	assert_(tree.root = &c);
+}
+
 void tree_find() {
 	vm::Tree tree;
 	assert_(tree.find(1000) == nullptr);
@@ -156,6 +167,7 @@ int main() {
 	simple_tree_insert();
 	triple_tree_insert();
 	same_tree_insert();
+	root_insert();
 	tree_find();
 	erase_from_empty_tree();
 	erase_root_from_tree();

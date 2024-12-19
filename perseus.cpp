@@ -17,6 +17,22 @@ namespace vm {
 		++count; return node;
 	}
 
+	Page* Tree::insert_at_root(Page* node) {
+		if (! node) { return nullptr; }
+		if (! root) {
+			node->index = 0;
+			node->not_bigger = node->bigger = nullptr;
+			root = node;
+			return node;
+		}
+		node->index = root->index;
+		node->bigger = root->bigger;
+		root->bigger = nullptr;
+		node->not_bigger = root;
+		root = node;
+		return node;
+	}
+
 	Page* Tree::find(size_t index) const {
 		Page* current { root };
 		for (;;) {

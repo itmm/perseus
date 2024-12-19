@@ -23,6 +23,7 @@ namespace vm {
 		size_t count { 0 };
 
 		Page* insert(Page* node);
+		Page* insert_at_root(Page* node);
 		Page* find(size_t index) const;
 		Page* get(size_t position) const;
 		Page* erase(Page* node);
