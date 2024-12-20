@@ -9,7 +9,7 @@ namespace vm {
 		}
 	}
 
-	void Perseus::write_page_(std::size_t position, const Page& page) {
+	inline void Perseus::write_page_(std::size_t position, const Page& page) {
 		auto start { position << page_bits };
 		ios_.seekp(start);
 		if (! ios_) {
@@ -39,7 +39,7 @@ namespace vm {
 		}
 	}
 
-	void Perseus::drop_some_() {
+	inline void Perseus::drop_some_() {
 		for (int i { some_count }; i; --i) {
 			if (clean_.empty()) { break; }
 			auto page { clean_.erase_random() };
