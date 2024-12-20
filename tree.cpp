@@ -6,7 +6,7 @@ namespace vm {
 		if (! root) { root = node; count = 1; return node; }
 		auto parent { root };
 		for (;;) {
-			if (node->index <= parent->index) {
+			if (node->value <= parent->value) {
 				if (parent->not_bigger) { parent = parent->not_bigger; continue; }
 				parent->not_bigger = node; break;
 			} else {
@@ -20,12 +20,12 @@ namespace vm {
 	Node* Tree::insert_at_root(Node* node) {
 		if (! node) { return nullptr; }
 		if (! root) {
-			node->index = 0;
+			node->value = 0;
 			node->not_bigger = node->bigger = nullptr;
 			root = node;
 			return node;
 		}
-		node->index = root->index;
+		node->value = root->value;
 		node->bigger = root->bigger;
 		root->bigger = nullptr;
 		node->not_bigger = root;
@@ -33,11 +33,11 @@ namespace vm {
 		return node;
 	}
 
-	Node* Tree::find(size_t index) const {
+	Node* Tree::find(size_t value) const {
 		auto current { root };
 		for (;;) {
-			if (! current || current->index == index) { return current; }
-			if (current->index < index) {
+			if (! current || current->value == value) { return current; }
+			if (current->value < value) {
 				current = current->bigger;
 			} else {
 				current = current->not_bigger;
@@ -90,7 +90,7 @@ namespace vm {
 		Node* current { root }, *parent { nullptr };
 		while (current && current != node) {
 			parent = current;
-			if (current->index < node->index) {
+			if (current->value < node->value) {
 				current = current->bigger;
 			} else {
 				current = current->not_bigger;

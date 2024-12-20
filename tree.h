@@ -7,7 +7,7 @@ namespace vm {
 	struct Node {
 		Node* not_bigger;
 		Node* bigger;
-		size_t index;
+		size_t value;
 	};
 
 	struct Tree {

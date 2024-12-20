@@ -26,9 +26,9 @@ void simple_tree_insert() {
 void triple_tree_insert() {
 	vm::Tree tree;
 	vm::Page small, middle, big;
-	small.index = 1000;
-	middle.index = 2000;
-	big.index = 3000;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
 	assert_(tree.insert(&middle) == &middle);
 	assert_(tree.insert(&small) == &small);
 	assert_(tree.insert(&big) == &big);
@@ -41,7 +41,7 @@ void triple_tree_insert() {
 void same_tree_insert() {
 	vm::Tree tree;
 	vm::Page a, b, c;
-	a.index = b.index = c.index = 1000;
+	a.value = b.value = c.value = 1000;
 	assert_(tree.insert(&a) == &a);
 	assert_(tree.insert(&b) == &b);
 	assert_(tree.insert(&c) == &c);
@@ -66,9 +66,9 @@ void tree_find() {
 	vm::Tree tree;
 	assert_(tree.find(1000) == nullptr);
 	vm::Page small, middle, big;
-	small.index = 1000;
-	middle.index = 2000;
-	big.index = 3000;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
 	assert_(tree.find(2000) == &middle);
 	assert_(tree.find(1000) == &small);
@@ -87,9 +87,9 @@ void erase_from_empty_tree() {
 void erase_root_from_tree() {
 	vm::Tree tree;
 	vm::Page small, middle, big;
-	small.index = 1000;
-	middle.index = 2000;
-	big.index = 3000;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
 	assert_(tree.root == &middle);
 	assert_(tree.erase(&middle) == &middle);
@@ -100,9 +100,9 @@ void erase_any() {
 	vm::Tree tree;
 	assert_(tree.erase() == nullptr);
 	vm::Page small, middle, big;
-	small.index = 1000;
-	middle.index = 2000;
-	big.index = 3000;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
 	assert_(tree.erase() == &middle);
 	assert_(tree.erase() == &small);
@@ -115,9 +115,9 @@ void tree_count() {
 	assert_(tree.get(0) == nullptr);
 
 	vm::Page small, middle, big;
-	small.index = 1000;
-	middle.index = 2000;
-	big.index = 3000;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
 	tree.insert(&middle);
 	assert_(tree.get(0) == &middle);
 	assert_(tree.get(1) == nullptr);
