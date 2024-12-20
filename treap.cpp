@@ -15,8 +15,11 @@ namespace vm {
 
 	Node* Treap::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr;
-		std::uniform_int_distribution<std::size_t> dist { 0, std::numeric_limits<size_t>::max() };
+		std::uniform_int_distribution<std::size_t> dist {
+			0, std::numeric_limits<size_t>::max()
+		};
 		node->priority = dist(gen_);
+
 		if (! root) { root = node; count = 1; return node; }
 		auto orig { node };
 
@@ -79,7 +82,9 @@ namespace vm {
 		}
 	}
 
-	Treap::Node_Or_Count Treap::get_or_count(std::size_t position, Node* start) const {
+	Treap::Node_Or_Count Treap::get_or_count(
+		std::size_t position, Node* start
+	) const {
 		if (! start) { return 0ul; }
 		auto got { get_or_count(position, start->not_bigger) };
 		if (std::holds_alternative<Node*>(got)) { return got; }
