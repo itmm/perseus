@@ -82,22 +82,22 @@ namespace vm {
 		}
 	}
 
-	Treap::Node_Or_Count Treap::get_or_count(
+	Treap::Node_Or_Count_ Treap::get_or_count_(
 		std::size_t position, Node* start
 	) const {
 		if (! start) { return 0ul; }
-		auto got { get_or_count(position, start->not_bigger) };
+		auto got { get_or_count_(position, start->not_bigger) };
 		if (std::holds_alternative<Node*>(got)) { return got; }
 		std::size_t not_bigger_count { std::get<std::size_t>(got) };
 		position -= not_bigger_count;
 		if (! position) { return start; }
-		got = get_or_count(position - 1, start->bigger);
+		got = get_or_count_(position - 1, start->bigger);
 		if (std::holds_alternative<Node*>(got)) { return got; }
 		return not_bigger_count + 1 + std::get<std::size_t>(got);
 	}
 
 	Node* Treap::get(std::size_t position) const {
-		auto got { get_or_count(position, root) };
+		auto got { get_or_count_(position, root) };
 		if (std::holds_alternative<Node*>(got)) {
 			return std::get<Node*>(got);
 		} else {
@@ -105,7 +105,7 @@ namespace vm {
 		}
 	}
 
-	Node* Treap::extract_subtree(Node* node) {
+	Node* Treap::extract_subtree_(Node* node) {
 		Node* candidate;
 		if (! node->bigger) {
 			candidate = node->not_bigger;
@@ -114,10 +114,17 @@ namespace vm {
 			candidate = node->bigger;
 			node->bigger = nullptr;
 		} else {
-			candidate = node->not_bigger;
-			auto max { candidate };
-			while (max->bigger) { max = max->bigger; }
-			max->bigger = node->bigger;
+			if (node->bigger->priority > node->not_bigger->priority) {
+				candidate = node->bigger;
+				auto min { candidate };
+				while (min->not_bigger) { min = min->not_bigger; }
+				min->not_bigger = node->not_bigger;
+			} else {
+				candidate = node->not_bigger;
+				auto max { candidate };
+				while (max->bigger) { max = max->bigger; }
+				max->bigger = node->bigger;
+			}
 			node->not_bigger = node->bigger = nullptr;
 		}
 		return candidate;
@@ -137,7 +144,7 @@ namespace vm {
 		}
 		if (! current) { return nullptr; } // not in tree
 
-		current = extract_subtree(node);
+		current = extract_subtree_(node);
 
 		if (! parent) {
 			root = current;

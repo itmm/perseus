@@ -28,9 +28,9 @@ namespace vm {
 		bool valid() const { return ! root || root->valid(); }
 
 	private:
-		using Node_Or_Count = std::variant<Node*, std::size_t>;
-		Node_Or_Count get_or_count(std::size_t position, Node* start) const;
-		Node* extract_subtree(Node* node);
+		using Node_Or_Count_ = std::variant<Node*, std::size_t>;
+		Node_Or_Count_ get_or_count_(std::size_t position, Node* start) const;
+		Node* extract_subtree_(Node* node);
 
 		std::random_device rnd_;
 		std::mt19937 gen_ { rnd_() };
