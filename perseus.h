@@ -2,7 +2,6 @@
 
 #include "treap.h"
 
-#include <cassert>
 #include <iostream>
 
 namespace vm {
