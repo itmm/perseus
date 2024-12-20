@@ -1,4 +1,5 @@
 #include "perseus.h"
+#include "tree.h"
 
 #include <cassert>
 #include <sstream>
@@ -15,7 +16,7 @@ void empty_tree() {
 
 void simple_tree_insert() {
 	vm::Tree tree;
-	vm::Page node;
+	vm::Node node;
 	assert_(tree.insert(&node) == &node);
 	assert_(tree.root == &node);
 	assert_(tree.count == 1);
@@ -25,7 +26,7 @@ void simple_tree_insert() {
 
 void triple_tree_insert() {
 	vm::Tree tree;
-	vm::Page small, middle, big;
+	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
@@ -40,7 +41,7 @@ void triple_tree_insert() {
 
 void same_tree_insert() {
 	vm::Tree tree;
-	vm::Page a, b, c;
+	vm::Node a, b, c;
 	a.value = b.value = c.value = 1000;
 	assert_(tree.insert(&a) == &a);
 	assert_(tree.insert(&b) == &b);
@@ -53,7 +54,7 @@ void same_tree_insert() {
 
 void root_insert() {
 	vm::Tree tree;
-	vm::Page a, b, c;
+	vm::Node a, b, c;
 	assert_(tree.insert_at_root(&a) == &a);
 	assert_(tree.root = &a);
 	assert_(tree.insert_at_root(&b) == &b);
@@ -65,7 +66,7 @@ void root_insert() {
 void tree_find() {
 	vm::Tree tree;
 	assert_(tree.find(1000) == nullptr);
-	vm::Page small, middle, big;
+	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
@@ -80,13 +81,13 @@ void tree_find() {
 
 void erase_from_empty_tree() {
 	vm::Tree tree;
-	vm::Page a;
+	vm::Node a;
 	assert_(tree.erase(&a) == nullptr);
 }
 
 void erase_root_from_tree() {
 	vm::Tree tree;
-	vm::Page small, middle, big;
+	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
@@ -99,7 +100,7 @@ void erase_root_from_tree() {
 void erase_any() {
 	vm::Tree tree;
 	assert_(tree.erase() == nullptr);
-	vm::Page small, middle, big;
+	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
@@ -114,7 +115,7 @@ void tree_count() {
 	vm::Tree tree;
 	assert_(tree.get(0) == nullptr);
 
-	vm::Page small, middle, big;
+	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
