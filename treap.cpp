@@ -85,7 +85,7 @@ namespace vm {
 		}
 	}
 
-	Treap::Node_Or_Count_ Treap::get_or_count_(
+	inline Treap::Node_Or_Count_ Treap::get_or_count_(
 		std::size_t position, Node* start
 	) const {
 		if (! start) { return static_cast<std::size_t>(0); }
