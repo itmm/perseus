@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tree.h"
+#include "treap.h"
 
 #include <cassert>
 #include <iostream>
@@ -17,9 +17,9 @@ namespace vm {
 	class Perseus {
 			std::iostream& ios_;
 
-			Tree free_;
-			Tree clean_;
-			Tree dirty_;
+			Treap free_;
+			Treap clean_;
+			Treap dirty_;
 
 			void drop_some_();
 			void make_room_();

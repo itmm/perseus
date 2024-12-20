@@ -61,6 +61,11 @@ namespace vm {
 		clean_.insert(got);
 		ios_.seekg(position << page_bits);
 		ios_.read(got->data, page_size);
+		if (! ios_) {
+			auto written { ios_.gcount() };
+			std::fill(got->data + written, got->data + page_size, 0);
+			ios_.clear();
+		}
 		return { got, false };
 	}
 

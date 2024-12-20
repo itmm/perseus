@@ -1,7 +1,7 @@
-#include "tree.h"
+#include "treap.h"
 
 namespace vm {
-	Node* Tree::insert(Node* node) {
+	Node* Treap::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr;
 		std::uniform_int_distribution<std::size_t> dist { 0, std::numeric_limits<size_t>::max() };
 		node->priority = dist(gen_);
@@ -37,7 +37,7 @@ namespace vm {
 		++count; return orig;
 	}
 
-	Node* Tree::insert_at_root(Node* node) {
+	Node* Treap::insert_at_root(Node* node) {
 		if (! node) { return nullptr; }
 		++count;
 		if (! root) {
@@ -55,7 +55,7 @@ namespace vm {
 		return node;
 	}
 
-	Node* Tree::find(std::size_t value) const {
+	Node* Treap::find(std::size_t value) const {
 		auto current { root };
 		for (;;) {
 			if (! current || current->value == value) { return current; }
@@ -67,7 +67,7 @@ namespace vm {
 		}
 	}
 
-	Tree::Node_Or_Count Tree::get_or_count(std::size_t position, Node* start) const {
+	Treap::Node_Or_Count Treap::get_or_count(std::size_t position, Node* start) const {
 		if (! start) { return 0ul; }
 		auto got { get_or_count(position, start->not_bigger) };
 		if (std::holds_alternative<Node*>(got)) { return got; }
@@ -79,7 +79,7 @@ namespace vm {
 		return not_bigger_count + 1 + std::get<std::size_t>(got);
 	}
 
-	Node* Tree::get(std::size_t position) const {
+	Node* Treap::get(std::size_t position) const {
 		auto got { get_or_count(position, root) };
 		if (std::holds_alternative<Node*>(got)) {
 			return std::get<Node*>(got);
@@ -88,7 +88,7 @@ namespace vm {
 		}
 	}
 
-	Node* Tree::extract_subtree(Node* node) {
+	Node* Treap::extract_subtree(Node* node) {
 		Node* candidate;
 		if (! node->bigger) {
 			candidate = node->not_bigger;
@@ -106,7 +106,7 @@ namespace vm {
 		return candidate;
 	}
 
-	Node* Tree::erase(Node* node) {
+	Node* Treap::erase(Node* node) {
 		if (! node) { return nullptr; }
 
 		Node* current { root }, *parent { nullptr };
@@ -133,7 +133,7 @@ namespace vm {
 		return node;
 	}
 
-	Node* Tree::erase_random() {
+	Node* Treap::erase_random() {
 		if (empty()) { return nullptr; }
 		std::uniform_int_distribution<std::size_t> dist { 0, count - 1 };
 		return erase(get(dist(gen_)));

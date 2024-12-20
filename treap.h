@@ -12,7 +12,7 @@ namespace vm {
 		std::size_t priority;
 	};
 
-	struct Tree {
+	struct Treap {
 		Node* root { nullptr };
 		std::size_t count { 0 };
 
