@@ -8,14 +8,14 @@ static int tests_ { 0 };
 
 #define assert_(expr) do { ++tests_; assert(expr); } while (false)
 
-void empty_tree() {
+static inline void empty_tree() {
 	vm::Treap treap;
 	assert_(! treap.root);
 	assert_(! treap.count);
 	assert_(treap.valid());
 }
 
-void simple_tree_insert() {
+static inline void simple_tree_insert() {
 	vm::Treap treap;
 	vm::Node node;
 	assert_(treap.insert(&node) == &node);
@@ -26,7 +26,7 @@ void simple_tree_insert() {
 	assert_(! node.bigger);
 }
 
-void triple_tree_insert() {
+static inline void triple_tree_insert() {
 	vm::Treap treap;
 	vm::Node small, middle, big;
 	small.value = 1000;
@@ -39,7 +39,7 @@ void triple_tree_insert() {
 	assert_(treap.valid());
 }
 
-void same_tree_insert() {
+static inline void same_tree_insert() {
 	vm::Treap treap;
 	vm::Node a, b, c;
 	a.value = b.value = c.value = 1000;
@@ -50,7 +50,7 @@ void same_tree_insert() {
 	assert_(treap.valid());
 }
 
-void root_insert() {
+static inline void root_insert() {
 	vm::Treap treap;
 	vm::Node a, b, c;
 	assert_(treap.insert_at_root(&a) == &a);
@@ -63,7 +63,7 @@ void root_insert() {
 	assert_(treap.valid());
 }
 
-void tree_find() {
+static inline void tree_find() {
 	vm::Treap treap;
 	assert_(treap.find(1000) == nullptr);
 	vm::Node small, middle, big;
@@ -79,13 +79,13 @@ void tree_find() {
 	assert_(treap.find(3001) == nullptr);
 }
 
-void erase_from_empty_tree() {
+static inline void erase_from_empty_tree() {
 	vm::Treap treap;
 	vm::Node a;
 	assert_(treap.erase(&a) == nullptr);
 }
 
-void erase_root_from_tree() {
+static inline void erase_root_from_tree() {
 	vm::Treap treap;
 	vm::Node small, middle, big;
 	small.value = 1000;
@@ -97,7 +97,7 @@ void erase_root_from_tree() {
 	assert_(treap.valid());
 }
 
-void erase_root() {
+static inline void erase_root() {
 	vm::Treap treap;
 	assert_(treap.erase_root() == nullptr);
 	vm::Node small, middle, big;
@@ -112,7 +112,7 @@ void erase_root() {
 	assert_(treap.valid());
 }
 
-void tree_count() {
+static inline void tree_count() {
 	vm::Treap treap;
 	assert_(treap.get(0) == nullptr);
 
@@ -132,14 +132,14 @@ void tree_count() {
 	assert_(treap.valid());
 }
 
-void new_is_empty() {
+static inline void new_is_empty() {
 	std::stringstream ios;
 	vm::Page pages[4];
 	vm::Perseus pers { ios, pages, pages + 4 };
 	assert_(! pers.dirty());
 }
 
-void simple_read() {
+static inline void simple_read() {
 	std::stringstream ios { "abc" };
 	vm::Page pages[4];
 	vm::Perseus pers { ios, pages, pages + 4 };
@@ -147,7 +147,7 @@ void simple_read() {
 	assert_(pers.get(3) == 0);
 }
 
-void simple_write() {
+static inline void simple_write() {
 	std::stringstream ios { "abc" };
 	vm::Page pages[4];
 	vm::Perseus pers { ios, pages, pages + 4 };
@@ -156,7 +156,7 @@ void simple_write() {
 	assert_(pers.dirty());
 }
 
-void write_persists() {
+static inline void write_persists() {
 	std::stringstream ios { "abc" };
 	{
 		vm::Page pages[4];
@@ -166,7 +166,7 @@ void write_persists() {
 	assert_(ios.str()[1] == 'x');
 }
 
-void non_changing_write() {
+static inline void non_changing_write() {
 	std::stringstream ios { "abc" };
 	vm::Page pages[4];
 	vm::Perseus pers { ios, pages, pages + 4 };
@@ -174,7 +174,7 @@ void non_changing_write() {
 	assert_(! pers.dirty());
 }
 
-void write_out_of_bounds() {
+static inline void write_out_of_bounds() {
 	std::stringstream ios { "abc" };
 	{
 		vm::Page pages[4];
