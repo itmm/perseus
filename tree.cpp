@@ -33,7 +33,7 @@ namespace vm {
 		return node;
 	}
 
-	Node* Tree::find(size_t value) const {
+	Node* Tree::find(std::size_t value) const {
 		auto current { root };
 		for (;;) {
 			if (! current || current->value == value) { return current; }
@@ -45,19 +45,19 @@ namespace vm {
 		}
 	}
 
-	Tree::Node_Or_Count Tree::get_or_count(size_t position, Node* start) const {
+	Tree::Node_Or_Count Tree::get_or_count(std::size_t position, Node* start) const {
 		if (! start) { return 0ul; }
 		auto got { get_or_count(position, start->not_bigger) };
 		if (std::holds_alternative<Node*>(got)) { return got; }
-		size_t not_bigger_count { std::get<size_t>(got) };
+		std::size_t not_bigger_count { std::get<std::size_t>(got) };
 		position -= not_bigger_count;
 		if (! position) { return start; }
 		got = get_or_count(position - 1, start->bigger);
 		if (std::holds_alternative<Node*>(got)) { return got; }
-		return not_bigger_count + 1 + std::get<size_t>(got);
+		return not_bigger_count + 1 + std::get<std::size_t>(got);
 	}
 
-	Node* Tree::get(size_t position) const {
+	Node* Tree::get(std::size_t position) const {
 		auto got { get_or_count(position, root) };
 		if (std::holds_alternative<Node*>(got)) {
 			return std::get<Node*>(got);

@@ -29,14 +29,14 @@ namespace vm {
 
 			void drop_some_();
 			void make_room_();
-			void write_page_(size_t position, const Page& page);
-			std::pair<Page*, bool> get_page_(size_t position);
-			Page& get_dirty_page_(size_t position);
+			void write_page_(std::size_t position, const Page& page);
+			std::pair<Page*, bool> get_page_(std::size_t position);
+			Page& get_dirty_page_(std::size_t position);
 
 		public:
 			static constexpr int some_count { 10 };
 
-			static_assert(page_bits < sizeof(size_t) * 8);
+			static_assert(page_bits < sizeof(std::size_t) * 8);
 			static_assert(page_bits > 0);
 			static_assert(some_count > 0);
 
@@ -46,10 +46,10 @@ namespace vm {
 			void flush_some();
 			void flush();
 
-			char get(size_t address);
-			char set(size_t address, char value);
+			char get(std::size_t address);
+			char set(std::size_t address, char value);
 
 			bool dirty() const;
-			size_t pages() const;
+			std::size_t pages() const;
 	};
 };

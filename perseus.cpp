@@ -9,7 +9,7 @@ namespace vm {
 		}
 	}
 
-	void Perseus::write_page_(size_t position, const Page& page) {
+	void Perseus::write_page_(std::size_t position, const Page& page) {
 		ios_.seekp(position << page_bits);
 		ios_.clear();
 		ios_.write(page.data, page_size);
@@ -17,7 +17,7 @@ namespace vm {
 
 	Page* Perseus::random_page_(Tree& tree) {
 		if (tree.empty()) { return nullptr; }
-		std::uniform_int_distribution<size_t> dist { 0, tree.count - 1 };
+		std::uniform_int_distribution<std::size_t> dist { 0, tree.count - 1 };
 		return static_cast<Page*>(tree.get(dist(gen_)));
 	}
 
@@ -45,7 +45,7 @@ namespace vm {
 		while (dirty()) { flush_some(); }
 	}
 
-	size_t Perseus::pages() const {
+	std::size_t Perseus::pages() const {
 		return clean_.count + dirty_.count;
 	}
 
@@ -58,7 +58,7 @@ namespace vm {
 		}
 	}
 
-	std::pair<Page*, bool> Perseus::get_page_(size_t position) {
+	std::pair<Page*, bool> Perseus::get_page_(std::size_t position) {
 		auto got { static_cast<Page*>(dirty_.find(position)) };
 		if (got) { return { got, true }; }
 		got = static_cast<Page*>(clean_.find(position));
@@ -72,7 +72,7 @@ namespace vm {
 		return { got, false };
 	}
 
-	Page& Perseus::get_dirty_page_(size_t position) {
+	Page& Perseus::get_dirty_page_(std::size_t position) {
 		auto got { static_cast<Page*>(dirty_.find(position)) };
 		if (got) { return *got; }
 		got = static_cast<Page*>(clean_.find(position));
@@ -90,12 +90,12 @@ namespace vm {
 		return *got;
 	}
 
-	char Perseus::get(size_t address) {
+	char Perseus::get(std::size_t address) {
 		auto got { get_page_(address >> page_bits) };
 		return got.first->data[address & page_mask];
 	}
 
-	char Perseus::set(size_t address, char value) {
+	char Perseus::set(std::size_t address, char value) {
 		auto got { get_page_(address >> page_bits) };
 		auto index { address & page_mask };
 		if (got.first->data[index] == value) {
