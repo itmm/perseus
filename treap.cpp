@@ -5,10 +5,12 @@ namespace vm {
 		if (bigger) {
 			if (bigger->value <= value) { return false; }
 			if (bigger->priority > priority) { return false; }
+			if (! bigger->valid()) { return false; }
 		}
 		if (not_bigger) {
 			if (not_bigger->value > value) { return false; }
 			if (not_bigger->priority > priority) { return false; }
+			if (! not_bigger->valid()) { return false; }
 		}
 		return true;
 	}
