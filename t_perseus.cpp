@@ -97,18 +97,18 @@ void erase_root_from_tree() {
 	assert_(tree.count == 2);
 }
 
-void erase_any() {
+void erase_root() {
 	vm::Tree tree;
-	assert_(tree.erase() == nullptr);
+	assert_(tree.erase_root() == nullptr);
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
-	assert_(tree.erase() == &middle);
-	assert_(tree.erase() == &small);
-	assert_(tree.erase() == &big);
-	assert_(tree.erase() == nullptr);
+	assert_(tree.erase_root() == &middle);
+	assert_(tree.erase_root() == &small);
+	assert_(tree.erase_root() == &big);
+	assert_(tree.erase_root() == nullptr);
 }
 
 void tree_count() {
@@ -172,7 +172,7 @@ int main() {
 	tree_find();
 	erase_from_empty_tree();
 	erase_root_from_tree();
-	erase_any();
+	erase_root();
 	tree_count();
 	new_is_empty();
 	simple_read();
