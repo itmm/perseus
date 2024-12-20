@@ -40,14 +40,7 @@ namespace vm {
 			static_assert(page_bits > 0);
 			static_assert(some_count > 0);
 
-			explicit Perseus(std::iostream& ios, Page* begin, Page* end):
-				ios_ { ios }
-			{
-				if (begin) {
-					for (; begin < end; ++begin) { free_.insert_at_root(begin); }
-				}
-			}
-
+			Perseus(std::iostream& ios, Page* begin, Page* end);
 			~Perseus() { flush(); }
 
 			void flush_some();

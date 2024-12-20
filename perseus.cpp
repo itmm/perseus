@@ -1,6 +1,14 @@
 #include "perseus.h"
 
 namespace vm {
+	Perseus::Perseus(std::iostream& ios, Page* begin, Page* end):
+		ios_ { ios }
+	{
+		if (begin) {
+			for (; begin < end; ++begin) { free_.insert_at_root(begin); }
+		}
+	}
+
 	void Perseus::write_page_(size_t position, const Page& page) {
 		ios_.seekp(position << page_bits);
 		ios_.clear();
