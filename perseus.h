@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tree.h"
+
 #include <cassert>
 #include <iostream>
 #include <map>
@@ -10,28 +12,8 @@ namespace vm {
 	static constexpr int page_size { 1 << page_bits };
 	static constexpr int page_mask { page_size - 1 };
 
-	struct Page {
+	struct Page: public Node {
 		char data[page_size];
-		// char color;
-		Page* not_bigger;
-		Page* bigger;
-		size_t index;
-	};
-
-	struct Tree {
-		Page* root { nullptr };
-		size_t count { 0 };
-
-		Page* insert(Page* node);
-		Page* insert_at_root(Page* node);
-		Page* find(size_t index) const;
-		Page* get(size_t position) const;
-		Page* erase(Page* node);
-		Page* erase() { return erase(root); }
-
-	private:
-		std::variant<Page*, size_t> get_or_count(size_t position, Page* start) const;
-		Page* extract_subtree(Page* node);
 	};
 
 	class Perseus {
