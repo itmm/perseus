@@ -4,7 +4,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <random>
 
 namespace vm {
 	static constexpr int page_bits { 12 };
@@ -21,11 +20,6 @@ namespace vm {
 			Tree free_;
 			Tree clean_;
 			Tree dirty_;
-
-			std::random_device rnd_;
-			std::mt19937 gen_ { rnd_() };
-
-			Page* random_page_(Tree& tree);
 
 			void drop_some_();
 			void make_room_();

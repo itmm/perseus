@@ -2,12 +2,14 @@
 
 #include <cstddef>
 #include <variant>
+#include <random>
 
 namespace vm {
 	struct Node {
 		Node* not_bigger;
 		Node* bigger;
 		std::size_t value;
+		std::size_t priority;
 	};
 
 	struct Tree {
@@ -20,11 +22,15 @@ namespace vm {
 		Node* get(std::size_t position) const;
 		Node* erase(Node* node);
 		Node* erase_root() { return erase(root); }
+		Node* erase_random();
 		bool empty() const { return ! count; }
 
 	private:
 		using Node_Or_Count = std::variant<Node*, std::size_t>;
 		Node_Or_Count get_or_count(std::size_t position, Node* start) const;
 		Node* extract_subtree(Node* node);
+
+		std::random_device rnd_;
+		std::mt19937 gen_ { rnd_() };
 	};
 }

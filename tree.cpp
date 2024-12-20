@@ -3,29 +3,51 @@
 namespace vm {
 	Node* Tree::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr;
+		std::uniform_int_distribution<std::size_t> dist { 0, std::numeric_limits<size_t>::max() };
+		node->priority = dist(gen_);
 		if (! root) { root = node; count = 1; return node; }
-		auto parent { root };
+		auto orig { node };
+
+		if (root->priority < node->priority) {
+			std::swap(root, node);
+		}
+
+		Node* parent { root };
 		for (;;) {
 			if (node->value <= parent->value) {
-				if (parent->not_bigger) { parent = parent->not_bigger; continue; }
-				parent->not_bigger = node; break;
+				if (parent->not_bigger) {
+					if (parent->not_bigger->priority < node->priority) {
+						std::swap(parent->not_bigger, node);
+					}
+					parent = parent->not_bigger; continue;
+				}
+				parent->not_bigger = node;
+				break;
 			} else {
-				if (parent->bigger) { parent = parent->bigger; continue; }
-				parent->bigger = node; break;
+				if (parent->bigger) {
+					if (parent->bigger->priority < node->priority) {
+						std::swap(parent->bigger, node);
+					}
+					parent = parent->bigger; continue;
+				}
+				parent->bigger = node;
+				break;
 			}
 		}
-		++count; return node;
+		++count; return orig;
 	}
 
 	Node* Tree::insert_at_root(Node* node) {
 		if (! node) { return nullptr; }
+		++count;
 		if (! root) {
-			node->value = 0;
+			node->value = node->priority = 0;
 			node->not_bigger = node->bigger = nullptr;
 			root = node;
 			return node;
 		}
 		node->value = root->value;
+		node->priority = root->priority;
 		node->bigger = root->bigger;
 		root->bigger = nullptr;
 		node->not_bigger = root;
@@ -109,5 +131,11 @@ namespace vm {
 		}
 		--count;
 		return node;
+	}
+
+	Node* Tree::erase_random() {
+		if (empty()) { return nullptr; }
+		std::uniform_int_distribution<std::size_t> dist { 0, count - 1 };
+		return erase(get(dist(gen_)));
 	}
 }

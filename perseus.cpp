@@ -15,19 +15,12 @@ namespace vm {
 		ios_.write(page.data, page_size);
 	}
 
-	Page* Perseus::random_page_(Tree& tree) {
-		if (tree.empty()) { return nullptr; }
-		std::uniform_int_distribution<std::size_t> dist { 0, tree.count - 1 };
-		return static_cast<Page*>(tree.get(dist(gen_)));
-	}
-
 	void Perseus::flush_some() {
 		for (int i { some_count }; i; --i) {
 			if (! dirty()) { break; }
-			auto page { random_page_(dirty_) };
+			auto page { static_cast<Page*>(dirty_.erase_random()) };
 			if (! page) { break; }
 			write_page_(page->value, *page);
-			dirty_.erase(page);
 			clean_.insert(page);
 		}
 	}
@@ -35,8 +28,7 @@ namespace vm {
 	void Perseus::drop_some_() {
 		for (int i { some_count }; i; --i) {
 			if (clean_.empty()) { break; }
-			auto page { random_page_(clean_) };
-			clean_.erase(page);
+			auto page { clean_.erase_random() };
 			free_.insert(page);
 		}
 	}

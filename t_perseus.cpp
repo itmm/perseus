@@ -34,9 +34,6 @@ void triple_tree_insert() {
 	assert_(tree.insert(&small) == &small);
 	assert_(tree.insert(&big) == &big);
 	assert_(tree.count == 3);
-	assert_(tree.root == &middle);
-	assert_(middle.not_bigger == &small);
-	assert_(middle.bigger == &big);
 }
 
 void same_tree_insert() {
@@ -47,9 +44,6 @@ void same_tree_insert() {
 	assert_(tree.insert(&b) == &b);
 	assert_(tree.insert(&c) == &c);
 	assert_(tree.count == 3);
-	assert_(tree.root == &a);
-	assert_(a.not_bigger == &b);
-	assert_(b.not_bigger == &c);
 }
 
 void root_insert() {
@@ -61,6 +55,7 @@ void root_insert() {
 	assert_(tree.root = &b);
 	assert_(tree.insert_at_root(&c) == &c);
 	assert_(tree.root = &c);
+	assert_(tree.count == 3);
 }
 
 void tree_find() {
@@ -92,7 +87,6 @@ void erase_root_from_tree() {
 	middle.value = 2000;
 	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
-	assert_(tree.root == &middle);
 	assert_(tree.erase(&middle) == &middle);
 	assert_(tree.count == 2);
 }
@@ -105,9 +99,9 @@ void erase_root() {
 	middle.value = 2000;
 	big.value = 3000;
 	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
-	assert_(tree.erase_root() == &middle);
-	assert_(tree.erase_root() == &small);
-	assert_(tree.erase_root() == &big);
+	assert_(tree.erase_root());
+	assert_(tree.erase_root());
+	assert_(tree.erase_root());
 	assert_(tree.erase_root() == nullptr);
 }
 
