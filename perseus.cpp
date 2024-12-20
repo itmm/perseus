@@ -37,10 +37,6 @@ namespace vm {
 		while (dirty()) { flush_some(); }
 	}
 
-	std::size_t Perseus::pages() const {
-		return clean_.count + dirty_.count;
-	}
-
 	void Perseus::make_room_() {
 		if (! free_.empty()) { return; }
 		if (dirty_.count >= clean_.count) {
@@ -86,9 +82,5 @@ namespace vm {
 		}
 		return got.first->data[index] = value;
 	}
-
-	bool Perseus::dirty() const {
-		return ! dirty_.empty();
-   }
 };
 

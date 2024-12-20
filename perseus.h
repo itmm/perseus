@@ -41,7 +41,7 @@ namespace vm {
 			char get(std::size_t address);
 			char set(std::size_t address, char value);
 
-			bool dirty() const;
-			std::size_t pages() const;
+			bool dirty() const { return ! dirty_.empty(); }
+			std::size_t pages() const { return clean_.count + dirty_.count; }
 	};
 };
