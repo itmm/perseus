@@ -30,7 +30,7 @@ namespace vm {
 			void drop_some_();
 			void make_room_();
 			void write_page_(size_t position, const Page& page);
-			Page& get_page_(size_t position);
+			std::pair<Page*, bool> get_page_(size_t position);
 			Page& get_dirty_page_(size_t position);
 
 		public:

@@ -151,6 +151,7 @@ void simple_write() {
 	vm::Perseus pers { ios, pages, pages + 4 };
 	assert_(pers.set(1, 'x') == 'x');
 	assert_(pers.get(1) == 'x');
+	assert_(pers.dirty());
 }
 
 void write_persists() {
@@ -161,6 +162,14 @@ void write_persists() {
 		assert_(pers.set(1, 'x') == 'x');
 	}
 	assert_(ios.str()[1] == 'x');
+}
+
+void non_changing_write() {
+	std::stringstream ios { "abc" };
+	vm::Page pages[4];
+	vm::Perseus pers { ios, pages, pages + 4 };
+	assert_(pers.set(1, 'b') == 'b');
+	assert_(! pers.dirty());
 }
 
 int main() {
@@ -178,6 +187,8 @@ int main() {
 	simple_read();
 	simple_write();
 	write_persists();
+	non_changing_write();
+
 	std::cout << tests_ << " tests ok\n";
 }
 

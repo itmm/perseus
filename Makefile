@@ -4,7 +4,7 @@ SOURCES := $(wildcard *.cpp)
 OBJECTS := $(SOURCES:.cpp=.o)
 TEST_APP := t_perseus
 
-CXXFLAGS = -std=c++20
+CXXFLAGS = -Wall -std=c++20
 
 all: $(TEST_APP)
 	./$^

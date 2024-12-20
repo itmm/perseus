@@ -50,18 +50,18 @@ namespace vm {
 		}
 	}
 
-	Page& Perseus::get_page_(size_t position) {
+	std::pair<Page*, bool> Perseus::get_page_(size_t position) {
 		auto got { static_cast<Page*>(dirty_.find(position)) };
-		if (got) { return *got; }
+		if (got) { return { got, true }; }
 		got = static_cast<Page*>(clean_.find(position));
-		if (got) { return *got; }
+		if (got) { return { got, false }; }
 		make_room_();
 		got = static_cast<Page*>(free_.erase_root());
 		got->value = position;
 		clean_.insert(got);
 		ios_.seekg(position << page_bits);
 		ios_.read(got->data, page_size);
-		return *got;
+		return { got, false };
 	}
 
 	Page& Perseus::get_dirty_page_(size_t position) {
@@ -83,15 +83,21 @@ namespace vm {
 	}
 
 	char Perseus::get(size_t address) {
-		auto& b { get_page_(address >> page_bits) };
-		return b.data[address & page_mask];
+		auto got { get_page_(address >> page_bits) };
+		return got.first->data[address & page_mask];
 	}
 
 	char Perseus::set(size_t address, char value) {
-		auto& b { get_dirty_page_(address >> page_bits) };
-		auto idx { address & page_mask };
-		b.data[idx] = value;
-		return b.data[idx];
+		auto got { get_page_(address >> page_bits) };
+		auto index { address & page_mask };
+		if (got.first->data[index] == value) {
+			return got.first->data[index];
+		}
+		if (! got.second) { 
+			clean_.erase(got.first);
+			dirty_.insert(got.first);
+		}
+		return got.first->data[index] = value;
 	}
 
 	bool Perseus::dirty() const {
