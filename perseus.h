@@ -25,7 +25,6 @@ namespace vm {
 			void make_room_();
 			void write_page_(std::size_t position, const Page& page);
 			std::pair<Page*, bool> get_page_(std::size_t position);
-			Page& get_dirty_page_(std::size_t position);
 
 		public:
 			static constexpr int some_count { 10 };

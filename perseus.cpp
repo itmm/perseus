@@ -69,24 +69,6 @@ namespace vm {
 		return { got, false };
 	}
 
-	Page& Perseus::get_dirty_page_(std::size_t position) {
-		auto got { static_cast<Page*>(dirty_.find(position)) };
-		if (got) { return *got; }
-		got = static_cast<Page*>(clean_.find(position));
-		if (got) {
-			clean_.erase(got);
-			dirty_.insert(got);
-			return *got;
-		}
-		make_room_();
-		ios_.seekg(position << page_bits);
-		got = static_cast<Page*>(free_.erase_root());
-		got->value = position;
-		dirty_.insert(got);
-		ios_.read(got->data, page_size);
-		return *got;
-	}
-
 	char Perseus::get(std::size_t address) {
 		auto got { get_page_(address >> page_bits) };
 		return got.first->data[address & page_mask];
