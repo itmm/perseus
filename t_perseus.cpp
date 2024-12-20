@@ -172,7 +172,7 @@ void non_changing_write() {
 	assert_(! pers.dirty());
 }
 
-int main() {
+static inline void tree_tests() {
 	empty_tree();
 	simple_tree_insert();
 	triple_tree_insert();
@@ -183,11 +183,19 @@ int main() {
 	erase_root_from_tree();
 	erase_root();
 	tree_count();
+}
+
+static inline void perseus_tests() {
 	new_is_empty();
 	simple_read();
 	simple_write();
 	write_persists();
 	non_changing_write();
+}
+
+int main() {
+	tree_tests();
+	perseus_tests();
 
 	std::cout << tests_ << " tests ok\n";
 }
