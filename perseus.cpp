@@ -10,8 +10,22 @@ namespace vm {
 	}
 
 	void Perseus::write_page_(std::size_t position, const Page& page) {
-		ios_.seekp(position << page_bits);
-		ios_.clear();
+		auto start { position << page_bits };
+		ios_.seekp(start);
+		if (! ios_) {
+			ios_.clear();
+			ios_.seekp(0, std::ios_base::end);
+			auto end { ios_.tellp() };
+			if (end >= start) { return; }
+			char empty_page[page_size] { 0 };
+			while (start - end > page_size) {
+				ios_.write(empty_page, page_size);
+				end += page_size;
+			}
+			if (start > end) {
+				ios_.write(empty_page, start - end);
+			}
+		}
 		ios_.write(page.data, page_size);
 	}
 

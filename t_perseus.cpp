@@ -174,6 +174,16 @@ void non_changing_write() {
 	assert_(! pers.dirty());
 }
 
+void write_out_of_bounds() {
+	std::stringstream ios { "abc" };
+	{
+		vm::Page pages[4];
+		vm::Perseus pers { ios, pages, pages + 4 };
+		assert_(pers.set(9000, 'c') == 'c');
+	}
+	assert_(ios.str().size() >= 8000);
+}
+
 static inline void tree_tests() {
 	empty_tree();
 	simple_tree_insert();
@@ -193,6 +203,7 @@ static inline void perseus_tests() {
 	simple_write();
 	write_persists();
 	non_changing_write();
+	write_out_of_bounds();
 }
 
 int main() {
