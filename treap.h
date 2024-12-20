@@ -10,6 +10,7 @@ namespace vm {
 		Node* bigger;
 		std::size_t value;
 		std::size_t priority;
+		bool valid() const;
 	};
 
 	struct Treap {
@@ -24,6 +25,7 @@ namespace vm {
 		Node* erase_root() { return erase(root); }
 		Node* erase_random();
 		bool empty() const { return ! count; }
+		bool valid() const { return ! root || root->valid(); }
 
 	private:
 		using Node_Or_Count = std::variant<Node*, std::size_t>;

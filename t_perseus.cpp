@@ -12,6 +12,7 @@ void empty_tree() {
 	vm::Treap treap;
 	assert_(! treap.root);
 	assert_(! treap.count);
+	assert_(treap.valid());
 }
 
 void simple_tree_insert() {
@@ -20,6 +21,7 @@ void simple_tree_insert() {
 	assert_(treap.insert(&node) == &node);
 	assert_(treap.root == &node);
 	assert_(treap.count == 1);
+	assert_(treap.valid());
 	assert_(! node.not_bigger);
 	assert_(! node.bigger);
 }
@@ -34,6 +36,7 @@ void triple_tree_insert() {
 	assert_(treap.insert(&small) == &small);
 	assert_(treap.insert(&big) == &big);
 	assert_(treap.count == 3);
+	assert_(treap.valid());
 }
 
 void same_tree_insert() {
@@ -44,6 +47,7 @@ void same_tree_insert() {
 	assert_(treap.insert(&b) == &b);
 	assert_(treap.insert(&c) == &c);
 	assert_(treap.count == 3);
+	assert_(treap.valid());
 }
 
 void root_insert() {
@@ -56,6 +60,7 @@ void root_insert() {
 	assert_(treap.insert_at_root(&c) == &c);
 	assert_(treap.root = &c);
 	assert_(treap.count == 3);
+	assert_(treap.valid());
 }
 
 void tree_find() {
@@ -89,6 +94,7 @@ void erase_root_from_tree() {
 	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
 	assert_(treap.erase(&middle) == &middle);
 	assert_(treap.count == 2);
+	assert_(treap.valid());
 }
 
 void erase_root() {
@@ -103,6 +109,7 @@ void erase_root() {
 	assert_(treap.erase_root());
 	assert_(treap.erase_root());
 	assert_(treap.erase_root() == nullptr);
+	assert_(treap.valid());
 }
 
 void tree_count() {
@@ -122,6 +129,7 @@ void tree_count() {
 	assert_(treap.get(1) == &middle);
 	assert_(treap.get(2) == &big);
 	assert_(treap.get(3) == nullptr);
+	assert_(treap.valid());
 }
 
 void new_is_empty() {

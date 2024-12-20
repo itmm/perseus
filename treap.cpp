@@ -1,6 +1,18 @@
 #include "treap.h"
 
 namespace vm {
+	bool Node::valid() const {
+		if (bigger) {
+			if (bigger->value <= value) { return false; }
+			if (bigger->priority > priority) { return false; }
+		}
+		if (not_bigger) {
+			if (not_bigger->value > value) { return false; }
+			if (not_bigger->priority > priority) { return false; }
+		}
+		return true;
+	}
+
 	Node* Treap::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr;
 		std::uniform_int_distribution<std::size_t> dist { 0, std::numeric_limits<size_t>::max() };
