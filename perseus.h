@@ -4,7 +4,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <map>
 #include <random>
 
 namespace vm {
@@ -18,13 +17,6 @@ namespace vm {
 
 	class Perseus {
 			std::iostream& ios_;
-			Page* begin_;
-			Page* end_;
-			Page* top_;
-
-			using Pages = std::map<size_t, Page>;
-			Pages clean_pages_;
-			Pages dirty_pages_;
 
 			Tree free_;
 			Tree clean_;
@@ -33,28 +25,27 @@ namespace vm {
 			std::random_device rnd_;
 			std::mt19937 gen_ { rnd_() };
 
-			Pages::iterator random_it_(Pages& pages);
-			Page& random_page_(Tree& tree);
+			Page* random_page_(Tree& tree);
 
 			void drop_some_();
 			void make_room_();
-			void write_page_(size_t idx, const Page& page);
-			Page& get_page_(size_t idx);
-			Page& get_dirty_page_(size_t idx);
+			void write_page_(size_t position, const Page& page);
+			Page& get_page_(size_t position);
+			Page& get_dirty_page_(size_t position);
 
 		public:
-			static constexpr int page_count { 1024 };
 			static constexpr int some_count { 10 };
 
 			static_assert(page_bits < sizeof(size_t) * 8);
 			static_assert(page_bits > 0);
-			static_assert(page_count > 0);
 			static_assert(some_count > 0);
 
 			explicit Perseus(std::iostream& ios, Page* begin, Page* end):
-				ios_ { ios }, begin_ { begin }, end_ { end }, top_ { begin_ }
+				ios_ { ios }
 			{
-				assert(begin && end > begin);
+				if (begin) {
+					for (; begin < end; ++begin) { free_.insert_at_root(begin); }
+				}
 			}
 
 			~Perseus() { flush(); }

@@ -1,39 +1,35 @@
 #include "perseus.h"
 
 namespace vm {
-	void Perseus::write_page_(size_t idx, const Page& page) {
-		ios_.seekp(idx << page_bits);
+	void Perseus::write_page_(size_t position, const Page& page) {
+		ios_.seekp(position << page_bits);
 		ios_.clear();
 		ios_.write(page.data, page_size);
 	}
 
-	Page& Perseus::random_page_(Tree& tree) {
+	Page* Perseus::random_page_(Tree& tree) {
+		if (tree.empty()) { return nullptr; }
 		std::uniform_int_distribution<size_t> dist { 0, tree.count - 1 };
-		return static_cast<Page&>(*tree.get(dist(gen_)));
-	}
-
-	Perseus::Pages::iterator Perseus::random_it_(Pages& pages) {
-		std::uniform_int_distribution<size_t> dist { 0, pages.size() - 1 };
-		auto it { pages.begin() };
-		std::advance(it, dist(gen_));
-		return it;
+		return static_cast<Page*>(tree.get(dist(gen_)));
 	}
 
 	void Perseus::flush_some() {
 		for (int i { some_count }; i; --i) {
 			if (! dirty()) { break; }
-			auto it { random_it_(dirty_pages_) };
-			write_page_(it->first, it->second);
-			clean_pages_[it->first] = it->second;
-			dirty_pages_.erase(it);
+			auto page { random_page_(dirty_) };
+			if (! page) { break; }
+			write_page_(page->value, *page);
+			dirty_.erase(page);
+			clean_.insert(page);
 		}
 	}
 
 	void Perseus::drop_some_() {
 		for (int i { some_count }; i; --i) {
-			if (clean_pages_.empty()) { break; }
-			auto it { random_it_(clean_pages_) };
-			clean_pages_.erase(it);
+			if (clean_.empty()) { break; }
+			auto page { random_page_(clean_) };
+			clean_.erase(page);
+			free_.insert(page);
 		}
 	}
 
@@ -42,41 +38,48 @@ namespace vm {
 	}
 
 	size_t Perseus::pages() const {
-		return clean_pages_.size() + dirty_pages_.size();
+		return clean_.count + dirty_.count;
 	}
 
 	void Perseus::make_room_() {
-		if (pages() < page_count) { return; }
-		while (dirty_pages_.size() > page_count/2) { flush_some(); }
-		while (pages() >= page_count) { drop_some_(); }
+		if (! free_.empty()) { return; }
+		if (dirty_.count >= clean_.count) {
+			flush_some();
+		} else {
+			drop_some_();
+		}
 	}
 
-	Page& Perseus::get_page_(size_t idx) {
-		auto got { dirty_pages_.find(idx) };
-		if (got != dirty_pages_.end()) { return got->second; }
-		got = clean_pages_.find(idx);
-		if (got != clean_pages_.end()) { return got->second; }
+	Page& Perseus::get_page_(size_t position) {
+		auto got { static_cast<Page*>(dirty_.find(position)) };
+		if (got) { return *got; }
+		got = static_cast<Page*>(clean_.find(position));
+		if (got) { return *got; }
 		make_room_();
-		ios_.seekg(idx << page_bits);
-		auto& buffer { clean_pages_[idx] };
-		ios_.read(buffer.data, page_size);
-		return buffer;
+		got = static_cast<Page*>(free_.erase_root());
+		got->value = position;
+		clean_.insert(got);
+		ios_.seekg(position << page_bits);
+		ios_.read(got->data, page_size);
+		return *got;
 	}
 
-	Page& Perseus::get_dirty_page_(size_t idx) {
-		auto got { dirty_pages_.find(idx) };
-		if (got != dirty_pages_.end()) { return got->second; }
-		got = clean_pages_.find(idx);
-		if (got != clean_pages_.end()) {
-			dirty_pages_[idx] = got->second;
-			clean_pages_.erase(got);
-			return dirty_pages_[idx];
+	Page& Perseus::get_dirty_page_(size_t position) {
+		auto got { static_cast<Page*>(dirty_.find(position)) };
+		if (got) { return *got; }
+		got = static_cast<Page*>(clean_.find(position));
+		if (got) {
+			clean_.erase(got);
+			dirty_.insert(got);
+			return *got;
 		}
 		make_room_();
-		ios_.seekg(idx << page_bits);
-		auto& buffer { dirty_pages_[idx] };
-		ios_.read(buffer.data, page_size);
-		return buffer;
+		ios_.seekg(position << page_bits);
+		got = static_cast<Page*>(free_.erase_root());
+		got->value = position;
+		dirty_.insert(got);
+		ios_.read(got->data, page_size);
+		return *got;
 	}
 
 	char Perseus::get(size_t address) {
@@ -92,7 +95,7 @@ namespace vm {
 	}
 
 	bool Perseus::dirty() const {
-		return ! dirty_pages_.empty();
+		return ! dirty_.empty();
    }
 };
 

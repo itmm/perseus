@@ -20,6 +20,7 @@ namespace vm {
 		Node* get(size_t position) const;
 		Node* erase(Node* node);
 		Node* erase_root() { return erase(root); }
+		bool empty() const { return ! count; }
 
 	private:
 		using Node_Or_Count = std::variant<Node*, size_t>;
