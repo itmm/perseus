@@ -181,7 +181,7 @@ void write_out_of_bounds() {
 		vm::Perseus pers { ios, pages, pages + 4 };
 		assert_(pers.set(9000, 'c') == 'c');
 	}
-	assert_(ios.str().size() >= 8000);
+	assert_(ios.str().size() >= 9000);
 }
 
 static inline void tree_tests() {
