@@ -19,7 +19,7 @@ namespace vm {
 
 		Node* insert(Node* node);
 		Node* insert_at_root(Node* node);
-		Node* find(std::size_t index) const;
+		Node* find(std::size_t value) const;
 		Node* get(std::size_t position) const;
 		Node* erase(Node* node);
 		Node* erase_root() { return erase(root); }
