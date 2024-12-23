@@ -1,76 +1,150 @@
 #include "treap.h"
 
+#include <cassert>
+#include <iostream>
+
 namespace vm {
-	bool Node::valid() const {
+	bool not_bigger_is_bigger(const Node* node) {
+		if (! node->not_bigger) { return false; }
+		if (! node->bigger) { return true; }
+		return node->not_bigger->is_bigger && ! node->bigger->is_bigger;
+	}
+
+	bool bigger_is_bigger(const Node* node) {
+		if (! node->bigger) { return false; }
+		if (! node->not_bigger) { return true; }
+		return node->bigger->is_bigger && ! node->not_bigger->is_bigger;
+	}
+
+	std::size_t Node::assert_valid() const {
+		std::size_t bigger_count { 0 }, not_bigger_count { 0 };
 		if (bigger) {
-			if (bigger->value <= value) { return false; }
-			if (bigger->priority > priority) { return false; }
-			if (! bigger->valid()) { return false; }
+			assert(bigger->value >= value);
+			bigger_count = bigger->assert_valid();
 		}
 		if (not_bigger) {
-			if (not_bigger->value > value) { return false; }
-			if (not_bigger->priority > priority) { return false; }
-			if (! not_bigger->valid()) { return false; }
+			assert(not_bigger->value <= value);
+			not_bigger_count = not_bigger->assert_valid();
 		}
-		return true;
+
+		if (not_bigger_count < bigger_count) {
+			assert(bigger_is_bigger(this));
+			assert(! not_bigger_is_bigger(this));
+		} else if (bigger_count < not_bigger_count) {
+			assert(not_bigger_is_bigger(this));
+			assert(! bigger_is_bigger(this));
+		} else {
+			assert(! bigger_is_bigger(this));
+			assert(! not_bigger_is_bigger(this));
+		}
+
+		return 1 + bigger_count + not_bigger_count;
+	}
+
+	Node* Treap::rotate_to_bigger_(Node* node, Node* parent) {
+		assert(node);
+		Node* not_bigger { node->not_bigger };
+		assert(not_bigger);
+		not_bigger->is_bigger = node->is_bigger; node->is_bigger = false;
+		node->not_bigger = not_bigger->bigger;
+		not_bigger->bigger = node;
+		if (parent) {
+			if (parent->bigger == node) {
+				parent->bigger = not_bigger;
+			} else {
+				parent->not_bigger = not_bigger;
+			}
+		} else { root = not_bigger; }
+		return not_bigger;
+	}
+
+	Node* Treap::rotate_to_not_bigger_(Node* node, Node* parent) {
+		assert(node);
+		Node* bigger { node->bigger };
+		assert(bigger);
+		bigger->is_bigger = node->is_bigger; node->is_bigger = false;
+		node->bigger = bigger->not_bigger;
+		bigger->not_bigger = node;
+		if (parent) {
+			if (parent->bigger == node) {
+				parent->bigger = bigger;
+			} else {
+				parent->not_bigger = bigger;
+			}
+		} else { root = bigger; }
+		return bigger;
+	}
+
+	void normalize(Node* node) {
+		if (! node) { return; }
+		if (! node->bigger || ! node->bigger->is_bigger) { return; }
+		if (! node->not_bigger || ! node->not_bigger->is_bigger) { return; }
+		node->bigger->is_bigger = node->not_bigger->is_bigger = false;
+	}
+
+	void make_not_bigger_bigger(Node* node) {
+		assert(node && node->not_bigger);
+		if (! node->bigger) {
+			node->not_bigger->is_bigger = false;
+		} else if (node->bigger->is_bigger) {
+			node->bigger->is_bigger = node->not_bigger->is_bigger = false;
+		} else {
+			node->not_bigger->is_bigger = true;
+		}
+		normalize(node);
+	}
+
+	void make_bigger_bigger(Node* node) {
+		assert(node && node->bigger);
+		if (! node->not_bigger) {
+			node->bigger->is_bigger = false;
+		} else if (node->not_bigger->is_bigger) {
+			node->bigger->is_bigger = node->not_bigger->is_bigger = false;
+		} else {
+			node->bigger->is_bigger = true;
+		}
+		normalize(node);
 	}
 
 	Node* Treap::insert(Node* node) {
-		node->not_bigger = node->bigger = nullptr;
-		std::uniform_int_distribution<std::size_t> dist {
-			std::numeric_limits<std::size_t>::min(),
-			std::numeric_limits<std::size_t>::max()
-		};
-		node->priority = dist(gen_);
+		node->not_bigger = node->bigger = nullptr; node->is_bigger = false;
 
 		if (! root) { root = node; count = 1; return node; }
-		auto orig { node };
 
-		if (root->priority < node->priority) {
-			std::swap(root, node);
-		}
-
+		Node* pre_parent { nullptr };
 		Node* parent { root };
 		for (;;) {
 			if (node->value <= parent->value) {
 				if (parent->not_bigger) {
-					if (parent->not_bigger->priority < node->priority) {
-						std::swap(parent->not_bigger, node);
+					if (not_bigger_is_bigger(parent)) {
+						parent = rotate_to_bigger_(parent, pre_parent);
 					}
-					parent = parent->not_bigger; continue;
+					if (parent->not_bigger) {
+						make_not_bigger_bigger(parent);
+						pre_parent = parent;
+						parent = parent->not_bigger;
+						continue;
+					}
 				}
 				parent->not_bigger = node;
 				break;
 			} else {
 				if (parent->bigger) {
-					if (parent->bigger->priority < node->priority) {
-						std::swap(parent->bigger, node);
+					if (bigger_is_bigger(parent)) {
+						parent = rotate_to_not_bigger_(parent, pre_parent);
 					}
-					parent = parent->bigger; continue;
+					if (parent->bigger) {
+						make_bigger_bigger(parent);
+						pre_parent = parent;
+						parent = parent->bigger;
+						continue;
+					}
 				}
 				parent->bigger = node;
 				break;
 			}
 		}
-		++count; return orig;
-	}
-
-	Node* Treap::insert_at_root(Node* node) {
-		if (! node) { return nullptr; }
-		++count;
-		if (! root) {
-			node->value = node->priority = 0;
-			node->not_bigger = node->bigger = nullptr;
-			root = node;
-			return node;
-		}
-		node->value = root->value;
-		node->priority = root->priority;
-		node->bigger = root->bigger;
-		root->bigger = nullptr;
-		node->not_bigger = root;
-		root = node;
-		return node;
+		++count; return node;
 	}
 
 	Node* Treap::find(std::size_t value) const {

@@ -5,7 +5,7 @@ namespace vm {
 		ios_ { ios }
 	{
 		if (begin) {
-			for (; begin < end; ++begin) { free_.insert_at_root(begin); }
+			for (; begin < end; ++begin) { free_.insert(begin); }
 		}
 	}
 

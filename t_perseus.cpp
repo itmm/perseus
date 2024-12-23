@@ -12,7 +12,7 @@ static inline void empty_tree() {
 	vm::Treap treap;
 	assert_(! treap.root);
 	assert_(! treap.count);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void simple_tree_insert() {
@@ -21,7 +21,7 @@ static inline void simple_tree_insert() {
 	assert_(treap.insert(&node) == &node);
 	assert_(treap.root == &node);
 	assert_(treap.count == 1);
-	assert_(treap.valid());
+	treap.assert_valid();
 	assert_(! node.not_bigger);
 	assert_(! node.bigger);
 }
@@ -36,7 +36,7 @@ static inline void triple_tree_insert() {
 	assert_(treap.insert(&small) == &small);
 	assert_(treap.insert(&big) == &big);
 	assert_(treap.count == 3);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void same_tree_insert() {
@@ -47,20 +47,7 @@ static inline void same_tree_insert() {
 	assert_(treap.insert(&b) == &b);
 	assert_(treap.insert(&c) == &c);
 	assert_(treap.count == 3);
-	assert_(treap.valid());
-}
-
-static inline void root_insert() {
-	vm::Treap treap;
-	vm::Node a, b, c;
-	assert_(treap.insert_at_root(&a) == &a);
-	assert_(treap.root = &a);
-	assert_(treap.insert_at_root(&b) == &b);
-	assert_(treap.root = &b);
-	assert_(treap.insert_at_root(&c) == &c);
-	assert_(treap.root = &c);
-	assert_(treap.count == 3);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void tree_find() {
@@ -94,7 +81,7 @@ static inline void erase_root_from_tree() {
 	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
 	assert_(treap.erase(&middle) == &middle);
 	assert_(treap.count == 2);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void erase_root() {
@@ -109,7 +96,7 @@ static inline void erase_root() {
 	assert_(treap.erase_root());
 	assert_(treap.erase_root());
 	assert_(treap.erase_root() == nullptr);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void tree_count() {
@@ -129,7 +116,7 @@ static inline void tree_count() {
 	assert_(treap.get(1) == &middle);
 	assert_(treap.get(2) == &big);
 	assert_(treap.get(3) == nullptr);
-	assert_(treap.valid());
+	treap.assert_valid();
 }
 
 static inline void new_is_empty() {
@@ -189,7 +176,6 @@ static inline void tree_tests() {
 	simple_tree_insert();
 	triple_tree_insert();
 	same_tree_insert();
-	root_insert();
 	tree_find();
 	erase_from_empty_tree();
 	erase_root_from_tree();
