@@ -41,11 +41,6 @@ namespace vm {
 		return 1 + bigger_count + not_bigger_count;
 	}
 
-	std::size_t Treap::count_nodes(Node* node) {
-		if (! node) { return 0; };
-		return 1 + count_nodes(node->not_bigger) + count_nodes(node->bigger);
-	}
-
 	Node* Treap::rotate_to_bigger_(Node* node, Node* parent) {
 		assert(node);
 		Node* not_bigger { node->not_bigger };
