@@ -1,4 +1,4 @@
-#include "treap.h"
+#include "tree.h"
 
 #include <cassert>
 #include <iostream>
@@ -41,7 +41,7 @@ namespace vm {
 		return 1 + bigger_count + not_bigger_count;
 	}
 
-	Node* Treap::rotate_to_bigger_(Node* node, Node* parent) {
+	Node* Tree::rotate_to_bigger_(Node* node, Node* parent) {
 		assert(node);
 		Node* not_bigger { node->not_bigger };
 		assert(not_bigger);
@@ -58,7 +58,7 @@ namespace vm {
 		return not_bigger;
 	}
 
-	Node* Treap::rotate_to_not_bigger_(Node* node, Node* parent) {
+	Node* Tree::rotate_to_not_bigger_(Node* node, Node* parent) {
 		assert(node);
 		Node* bigger { node->bigger };
 		assert(bigger);
@@ -112,7 +112,7 @@ namespace vm {
 		normalize(node);
 	}
 
-	Node* Treap::insert(Node* node) {
+	Node* Tree::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr; node->is_bigger = false;
 
 		if (! root) { root = node; count = 1; return node; }
@@ -153,7 +153,7 @@ namespace vm {
 		++count; return node;
 	}
 
-	Node* Treap::find(std::size_t value) const {
+	Node* Tree::find(std::size_t value) const {
 		auto current { root };
 		for (;;) {
 			if (! current || current->value == value) { return current; }
@@ -165,7 +165,7 @@ namespace vm {
 		}
 	}
 
-	inline Treap::Node_Or_Count_ Treap::get_or_count_(
+	inline Tree::Node_Or_Count_ Tree::get_or_count_(
 		std::size_t position, Node* start
 	) const {
 		if (! start) { return static_cast<std::size_t>(0); }
@@ -179,7 +179,7 @@ namespace vm {
 		return not_bigger_count + 1 + std::get<std::size_t>(got);
 	}
 
-	Node* Treap::get(std::size_t position) const {
+	Node* Tree::get(std::size_t position) const {
 		auto got { get_or_count_(position, root) };
 		if (std::holds_alternative<Node*>(got)) {
 			return std::get<Node*>(got);
@@ -188,7 +188,7 @@ namespace vm {
 		}
 	}
 
-	Node* Treap::erase_min() {
+	Node* Tree::erase_min() {
 		if (! root) { return nullptr; }
 		Node* current { root }, *parent { nullptr };
 		while (current->not_bigger) { 
@@ -209,16 +209,16 @@ namespace vm {
 		return current;
 	}
 
-	Node* Treap::extract_subtree_(Node* node) {
+	Node* Tree::extract_subtree_(Node* node) {
 		Node* candidate;
 		if (! node->bigger) {
 			candidate = node->not_bigger;
 		} else if (! node->not_bigger) {
 			candidate = node->bigger;
 		} else {
-			Treap not_bigger_tree { node->not_bigger };
-			Treap bigger_tree { node->bigger };
-			Treap merged;
+			Tree not_bigger_tree { node->not_bigger };
+			Tree bigger_tree { node->bigger };
+			Tree merged;
 			while (! not_bigger_tree.empty()) {
 				merged.insert(not_bigger_tree.erase_min());
 			}
@@ -231,7 +231,7 @@ namespace vm {
 		return candidate;
 	}
 
-	Node* Treap::erase(Node* node) {
+	Node* Tree::erase(Node* node) {
 		if (! node) { return nullptr; }
 
 		Node* current { root };
@@ -281,13 +281,13 @@ namespace vm {
 		return node;
 	}
 
-	Node* Treap::erase_random() {
+	Node* Tree::erase_random() {
 		if (empty()) { return nullptr; }
 		std::uniform_int_distribution<std::size_t> dist { 0, count - 1 };
 		return erase(get(dist(gen_)));
 	}
 
-	void Treap::assert_valid() const {
+	void Tree::assert_valid() const {
 		if (root) { 
 			assert(root->assert_valid() == count);
 		} else {

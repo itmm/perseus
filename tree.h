@@ -13,11 +13,11 @@ namespace vm {
 		std::size_t assert_valid() const;
 	};
 
-	struct Treap {
+	struct Tree {
 		Node* root;
 		std::size_t count { 0 };
 
-		explicit Treap(Node* root = nullptr): root { root } { }
+		explicit Tree(Node* root = nullptr): root { root } { }
 
 		Node* insert(Node* node);
 		Node* find(std::size_t value) const;

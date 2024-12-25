@@ -1,5 +1,5 @@
 #include "perseus.h"
-#include "treap.h"
+#include "tree.h"
 
 #include <cassert>
 #include <sstream>
@@ -9,113 +9,113 @@ static int tests_ { 0 };
 #define assert_(expr) do { ++tests_; assert(expr); } while (false)
 
 static inline void empty_tree() {
-	vm::Treap treap;
-	assert_(! treap.root);
-	assert_(! treap.count);
-	treap.assert_valid();
+	vm::Tree tree;
+	assert_(! tree.root);
+	assert_(! tree.count);
+	tree.assert_valid();
 }
 
 static inline void simple_tree_insert() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node node;
-	assert_(treap.insert(&node) == &node);
-	assert_(treap.root == &node);
-	assert_(treap.count == 1);
-	treap.assert_valid();
+	assert_(tree.insert(&node) == &node);
+	assert_(tree.root == &node);
+	assert_(tree.count == 1);
+	tree.assert_valid();
 	assert_(! node.not_bigger);
 	assert_(! node.bigger);
 }
 
 static inline void triple_tree_insert() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
-	assert_(treap.insert(&middle) == &middle);
-	assert_(treap.insert(&small) == &small);
-	assert_(treap.insert(&big) == &big);
-	assert_(treap.count == 3);
-	treap.assert_valid();
+	assert_(tree.insert(&middle) == &middle);
+	assert_(tree.insert(&small) == &small);
+	assert_(tree.insert(&big) == &big);
+	assert_(tree.count == 3);
+	tree.assert_valid();
 }
 
 static inline void same_tree_insert() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node a, b, c;
 	a.value = b.value = c.value = 1000;
-	assert_(treap.insert(&a) == &a);
-	assert_(treap.insert(&b) == &b);
-	assert_(treap.insert(&c) == &c);
-	assert_(treap.count == 3);
-	treap.assert_valid();
+	assert_(tree.insert(&a) == &a);
+	assert_(tree.insert(&b) == &b);
+	assert_(tree.insert(&c) == &c);
+	assert_(tree.count == 3);
+	tree.assert_valid();
 }
 
 static inline void tree_find() {
-	vm::Treap treap;
-	assert_(treap.find(1000) == nullptr);
+	vm::Tree tree;
+	assert_(tree.find(1000) == nullptr);
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
-	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
-	assert_(treap.find(2000) == &middle);
-	assert_(treap.find(1000) == &small);
-	assert_(treap.find(3000) == &big);
-	assert_(treap.find(999) == nullptr);
-	assert_(treap.find(1500) == nullptr);
-	assert_(treap.find(3001) == nullptr);
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.find(2000) == &middle);
+	assert_(tree.find(1000) == &small);
+	assert_(tree.find(3000) == &big);
+	assert_(tree.find(999) == nullptr);
+	assert_(tree.find(1500) == nullptr);
+	assert_(tree.find(3001) == nullptr);
 }
 
 static inline void erase_from_empty_tree() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node a;
-	assert_(treap.erase(&a) == nullptr);
+	assert_(tree.erase(&a) == nullptr);
 }
 
 static inline void erase_root_from_tree() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
-	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
-	vm::Node* root { treap.root };
-	assert_(treap.erase(root) == root);
-	assert_(treap.count == 2);
-	treap.assert_valid();
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	vm::Node* root { tree.root };
+	assert_(tree.erase(root) == root);
+	assert_(tree.count == 2);
+	tree.assert_valid();
 }
 
 static inline void erase_min_from_tree() {
-	vm::Treap treap;
+	vm::Tree tree;
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
-	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
-	assert_(treap.erase_min() == &small);
-	assert_(treap.erase_min() == &middle);
-	assert_(treap.erase_min() == &big);
-	assert_(treap.empty());
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.erase_min() == &small);
+	assert_(tree.erase_min() == &middle);
+	assert_(tree.erase_min() == &big);
+	assert_(tree.empty());
 }
 
 static inline void tree_count() {
-	vm::Treap treap;
-	assert_(treap.get(0) == nullptr);
+	vm::Tree tree;
+	assert_(tree.get(0) == nullptr);
 
 	vm::Node small, middle, big;
 	small.value = 1000;
 	middle.value = 2000;
 	big.value = 3000;
-	treap.insert(&middle);
-	assert_(treap.get(0) == &middle);
-	assert_(treap.get(1) == nullptr);
+	tree.insert(&middle);
+	assert_(tree.get(0) == &middle);
+	assert_(tree.get(1) == nullptr);
 
-	treap.insert(&small); treap.insert(&big);
-	assert_(treap.get(0) == &small);
-	assert_(treap.get(1) == &middle);
-	assert_(treap.get(2) == &big);
-	assert_(treap.get(3) == nullptr);
-	treap.assert_valid();
+	tree.insert(&small); tree.insert(&big);
+	assert_(tree.get(0) == &small);
+	assert_(tree.get(1) == &middle);
+	assert_(tree.get(2) == &big);
+	assert_(tree.get(3) == nullptr);
+	tree.assert_valid();
 }
 
 static inline void new_is_empty() {
