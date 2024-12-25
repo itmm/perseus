@@ -79,7 +79,8 @@ static inline void erase_root_from_tree() {
 	middle.value = 2000;
 	big.value = 3000;
 	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
-	assert_(treap.erase(&middle) == &middle);
+	vm::Node* root { treap.root };
+	assert_(treap.erase(root) == root);
 	assert_(treap.count == 2);
 	treap.assert_valid();
 }

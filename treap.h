@@ -16,9 +16,9 @@ namespace vm {
 
 	struct Treap {
 		Node* root;
-		std::size_t count { 0 };
+		std::size_t count;
 
-		explicit Treap(Node* root = nullptr): root { root } { }
+		explicit Treap(Node* root = nullptr): root { root }, count { count_nodes(root) } { }
 
 		Node* insert(Node* node);
 		Node* find(std::size_t value) const;
@@ -27,12 +27,14 @@ namespace vm {
 		Node* erase_min();
 		Node* erase_random();
 		bool empty() const { return ! count; }
-		void assert_valid() const { if (root) { root->assert_valid(); } }
+		void assert_valid() const;
 
 	private:
 		using Node_Or_Count_ = std::variant<Node*, std::size_t>;
 		Node_Or_Count_ get_or_count_(std::size_t position, Node* start) const;
 		Node* extract_subtree_(Node* node);
+
+		static std::size_t count_nodes(Node* node);
 
 		Node* rotate_to_bigger_(Node* node, Node* parent);
 		Node* rotate_to_not_bigger_(Node* node, Node* parent);

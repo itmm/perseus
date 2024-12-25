@@ -41,6 +41,11 @@ namespace vm {
 		return 1 + bigger_count + not_bigger_count;
 	}
 
+	std::size_t Treap::count_nodes(Node* node) {
+		if (! node) { return 0; };
+		return 1 + count_nodes(node->not_bigger) + count_nodes(node->bigger);
+	}
+
 	Node* Treap::rotate_to_bigger_(Node* node, Node* parent) {
 		assert(node);
 		Node* not_bigger { node->not_bigger };
@@ -216,17 +221,16 @@ namespace vm {
 		} else if (! node->not_bigger) {
 			candidate = node->bigger;
 		} else {
-			if (node->bigger->priority > node->not_bigger->priority) {
-				candidate = node->bigger;
-				auto min { candidate };
-				while (min->not_bigger) { min = min->not_bigger; }
-				min->not_bigger = node->not_bigger;
-			} else {
-				candidate = node->not_bigger;
-				auto max { candidate };
-				while (max->bigger) { max = max->bigger; }
-				max->bigger = node->bigger;
+			Treap not_bigger_tree { node->not_bigger };
+			Treap bigger_tree { node->bigger };
+			Treap merged;
+			while (! not_bigger_tree.empty()) {
+				merged.insert(not_bigger_tree.erase_min());
 			}
+			while (! bigger_tree.empty()) {
+				merged.insert(bigger_tree.erase_min());
+			}
+			candidate = merged.root;
 		}
 		node->not_bigger = node->bigger = nullptr;
 		return candidate;
@@ -250,26 +254,20 @@ namespace vm {
 		while (current && current != node) {
 			parent = current;
 			if (current->value < node->value) {
-				if (bigger_is_bigger(parent)) {
-					parent = rotate_to_not_bigger_(parent, pre_parent);
-				}
-				if (parent->bigger) {
-					make_bigger_bigger(parent);
-					pre_parent = parent;
-					parent = parent->bigger;
-					continue;
-				}
-				current = current->bigger;
-			} else {
 				if (not_bigger_is_bigger(parent)) {
 					parent = rotate_to_bigger_(parent, pre_parent);
 				}
-				if (parent->not_bigger) {
-					make_not_bigger_bigger(parent);
-					pre_parent = parent;
-					parent = parent->not_bigger;
-					continue;
+				make_bigger_bigger(parent);
+				pre_parent = parent;
+				parent = parent->bigger;
+				current = current->bigger;
+			} else {
+				if (bigger_is_bigger(parent)) {
+					parent = rotate_to_not_bigger_(parent, pre_parent);
 				}
+				make_not_bigger_bigger(parent);
+				pre_parent = parent;
+				parent = parent->not_bigger;
 				current = current->not_bigger;
 			}
 		}
@@ -292,5 +290,13 @@ namespace vm {
 		if (empty()) { return nullptr; }
 		std::uniform_int_distribution<std::size_t> dist { 0, count - 1 };
 		return erase(get(dist(gen_)));
+	}
+
+	void Treap::assert_valid() const {
+		if (root) { 
+			assert(root->assert_valid() == count);
+		} else {
+			assert(count == 0);
+		}
 	}
 }
