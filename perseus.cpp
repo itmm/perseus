@@ -66,7 +66,7 @@ namespace vm {
 		got = static_cast<Page*>(clean_.find(position));
 		if (got) { return { got, false }; }
 		make_room_();
-		got = static_cast<Page*>(free_.erase_root());
+		got = static_cast<Page*>(free_.erase_min());
 		got->value = position;
 		clean_.insert(got);
 		ios_.seekg(position << page_bits);

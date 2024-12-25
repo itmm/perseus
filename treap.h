@@ -24,7 +24,6 @@ namespace vm {
 		Node* find(std::size_t value) const;
 		Node* get(std::size_t position) const;
 		Node* erase(Node* node);
-		Node* erase_root() { return erase(root); }
 		Node* erase_min();
 		Node* erase_random();
 		bool empty() const { return ! count; }

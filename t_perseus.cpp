@@ -97,21 +97,6 @@ static inline void erase_min_from_tree() {
 	assert_(treap.empty());
 }
 
-static inline void erase_root() {
-	vm::Treap treap;
-	assert_(treap.erase_root() == nullptr);
-	vm::Node small, middle, big;
-	small.value = 1000;
-	middle.value = 2000;
-	big.value = 3000;
-	treap.insert(&middle); treap.insert(&small); treap.insert(&big);
-	assert_(treap.erase_root());
-	assert_(treap.erase_root());
-	assert_(treap.erase_root());
-	assert_(treap.erase_root() == nullptr);
-	treap.assert_valid();
-}
-
 static inline void tree_count() {
 	vm::Treap treap;
 	assert_(treap.get(0) == nullptr);
@@ -193,7 +178,6 @@ static inline void tree_tests() {
 	erase_from_empty_tree();
 	erase_root_from_tree();
 	erase_min_from_tree();
-	erase_root();
 	tree_count();
 }
 
