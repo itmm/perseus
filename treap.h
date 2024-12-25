@@ -15,14 +15,17 @@ namespace vm {
 	};
 
 	struct Treap {
-		Node* root { nullptr };
+		Node* root;
 		std::size_t count { 0 };
+
+		explicit Treap(Node* root = nullptr): root { root } { }
 
 		Node* insert(Node* node);
 		Node* find(std::size_t value) const;
 		Node* get(std::size_t position) const;
 		Node* erase(Node* node);
 		Node* erase_root() { return erase(root); }
+		Node* erase_min();
 		Node* erase_random();
 		bool empty() const { return ! count; }
 		void assert_valid() const { if (root) { root->assert_valid(); } }

@@ -94,6 +94,12 @@ namespace vm {
 		normalize(node);
 	}
 
+	void make_not_bigger_smaller(Node* node) {
+		assert(node && node->not_bigger);
+		node->not_bigger->is_bigger = false;
+		normalize(node);
+	}
+
 	void make_bigger_bigger(Node* node) {
 		assert(node && node->bigger);
 		if (! node->not_bigger) {
@@ -182,6 +188,27 @@ namespace vm {
 		}
 	}
 
+	Node* Treap::erase_min() {
+		if (! root) { return nullptr; }
+		Node* current { root }, *parent { nullptr };
+		while (current->not_bigger) { 
+			if (bigger_is_bigger(current)) {
+				current = rotate_to_not_bigger_(current, parent);
+			}
+			make_not_bigger_smaller(current);
+			parent = current;
+			current = current->not_bigger;
+		}
+		if (parent) {
+			parent->not_bigger = current->bigger;
+		} else {
+			root = current->bigger;
+		}
+		current->bigger = nullptr;
+		--count;
+		return current;
+	}
+
 	Node* Treap::extract_subtree_(Node* node) {
 		Node* candidate;
 		if (! node->bigger) {
@@ -208,9 +235,8 @@ namespace vm {
 	Node* Treap::erase(Node* node) {
 		if (! node) { return nullptr; }
 
-		Node* current { root }, *parent { nullptr };
+		Node* current { root };
 		while (current && current != node) {
-			parent = current;
 			if (current->value < node->value) {
 				current = current->bigger;
 			} else {
@@ -218,6 +244,36 @@ namespace vm {
 			}
 		}
 		if (! current) { return nullptr; } // not in tree
+
+		current = root;
+		Node* parent { nullptr }, *pre_parent { nullptr };
+		while (current && current != node) {
+			parent = current;
+			if (current->value < node->value) {
+				if (bigger_is_bigger(parent)) {
+					parent = rotate_to_not_bigger_(parent, pre_parent);
+				}
+				if (parent->bigger) {
+					make_bigger_bigger(parent);
+					pre_parent = parent;
+					parent = parent->bigger;
+					continue;
+				}
+				current = current->bigger;
+			} else {
+				if (not_bigger_is_bigger(parent)) {
+					parent = rotate_to_bigger_(parent, pre_parent);
+				}
+				if (parent->not_bigger) {
+					make_not_bigger_bigger(parent);
+					pre_parent = parent;
+					parent = parent->not_bigger;
+					continue;
+				}
+				current = current->not_bigger;
+			}
+		}
+		assert(current);
 
 		current = extract_subtree_(node);
 
