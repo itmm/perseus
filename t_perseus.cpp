@@ -98,6 +98,19 @@ static inline void erase_min_from_tree() {
 	assert_(tree.empty());
 }
 
+static inline void erase_max_from_tree() {
+	vm::Tree tree;
+	vm::Node small, middle, big;
+	small.value = 1000;
+	middle.value = 2000;
+	big.value = 3000;
+	tree.insert(&middle); tree.insert(&small); tree.insert(&big);
+	assert_(tree.erase_min() == &small);
+	assert_(tree.erase_min() == &middle);
+	assert_(tree.erase_min() == &big);
+	assert_(tree.empty());
+}
+
 static inline void tree_count() {
 	vm::Tree tree;
 	assert_(tree.get(0) == nullptr);
@@ -179,6 +192,7 @@ static inline void tree_tests() {
 	erase_from_empty_tree();
 	erase_root_from_tree();
 	erase_min_from_tree();
+	erase_max_from_tree();
 	tree_count();
 }
 

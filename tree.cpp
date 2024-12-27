@@ -112,6 +112,12 @@ namespace vm {
 		normalize(node);
 	}
 
+	void make_bigger_smaller(Node* node) {
+		assert(node && node->bigger);
+		node->bigger->is_bigger = false;
+		normalize(node);
+	}
+
 	Node* Tree::insert(Node* node) {
 		node->not_bigger = node->bigger = nullptr; node->is_bigger = false;
 
@@ -205,6 +211,27 @@ namespace vm {
 			root = current->bigger;
 		}
 		current->bigger = nullptr;
+		--count;
+		return current;
+	}
+
+	Node* Tree::erase_max() {
+		if (! root) { return nullptr; }
+		Node* current { root }, *parent { nullptr };
+		while (current->bigger) { 
+			if (not_bigger_is_bigger(current)) {
+				current = rotate_to_bigger_(current, parent);
+			}
+			make_bigger_smaller(current);
+			parent = current;
+			current = current->bigger;
+		}
+		if (parent) {
+			parent->bigger = current->not_bigger;
+		} else {
+			root = current->not_bigger;
+		}
+		current->not_bigger = nullptr;
 		--count;
 		return current;
 	}

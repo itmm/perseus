@@ -24,6 +24,7 @@ namespace vm {
 		Node* get(std::size_t position) const;
 		Node* erase(Node* node);
 		Node* erase_min();
+		Node* erase_max();
 		Node* erase_random();
 		bool empty() const { return ! root; }
 		void assert_valid() const;
