@@ -242,17 +242,29 @@ namespace vm {
 			candidate = node->not_bigger;
 		} else if (! node->not_bigger) {
 			candidate = node->bigger;
+		} else if (bigger_is_bigger(node)) {
+			Tree bigger_tree { node->bigger };
+			candidate = bigger_tree.erase_min();
+			candidate->bigger = bigger_tree.root;
+			candidate->not_bigger = node->not_bigger;
+			candidate->bigger->is_bigger = candidate->not_bigger->is_bigger = false;
+		} else if (not_bigger_is_bigger(node)) {
+			Tree not_bigger_tree { node->not_bigger };
+			candidate = not_bigger_tree.erase_max();
+			candidate->bigger = node->bigger;
+			candidate->not_bigger = not_bigger_tree.root;
+			candidate->bigger->is_bigger = candidate->not_bigger->is_bigger = false;
 		} else {
 			Tree not_bigger_tree { node->not_bigger };
-			Tree bigger_tree { node->bigger };
-			Tree merged;
-			while (! not_bigger_tree.empty()) {
-				merged.insert(not_bigger_tree.erase_min());
+			candidate = not_bigger_tree.erase_max();
+			candidate->bigger = node->bigger;
+			candidate->not_bigger = not_bigger_tree.root;
+			if (candidate->not_bigger) {
+				candidate->bigger->is_bigger = true;
+				candidate->not_bigger->is_bigger = false;
+			} else {
+				candidate->bigger->is_bigger = false;
 			}
-			while (! bigger_tree.empty()) {
-				merged.insert(bigger_tree.erase_min());
-			}
-			candidate = merged.root;
 		}
 		node->not_bigger = node->bigger = nullptr;
 		return candidate;
